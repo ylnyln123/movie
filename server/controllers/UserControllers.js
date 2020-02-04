@@ -1,4 +1,16 @@
 const { User } = require('../models')
+const config = require('../config')
+const Jwt = require('jsonwebtoken')
+
+// jwt用户认证
+function tokenSign ({ id, email }) {
+  // eslint-disable-next-line no-useless-catch
+  try {
+    return Jwt.sign({ id, email }, config.token.secretOrPrivateKey, config.token.options)
+  } catch (error) {
+    throw (error)
+  }
+}
 
 module.exports = {
 
@@ -7,7 +19,8 @@ module.exports = {
     try {
       const user = await User.create(req.body)
       res.status(201).send({
-        user
+        user,
+        token: tokenSign(user)
       })
     } catch (error) {
       res.status(400).send({
@@ -91,9 +104,10 @@ module.exports = {
       const isValidPassword = user.comparePassword(req.body.password)
       if (isValidPassword) {
         res.send({
-          user: user.toJSON()
+          user: user.toJSON(),
+          token: tokenSign(user)
         })
-      }else{
+      } else {
         res.status(403).send({
           code: 403,
           error: '用户名或密码错误'
