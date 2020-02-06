@@ -19,11 +19,12 @@ module.exports = {
     try {
       const user = await User.create(req.body)
       res.status(201).send({
+        code: 200,
         user,
         token: tokenSign(user)
       })
     } catch (error) {
-      res.status(400).send({
+      res.send({
         code: 400,
         error: '该邮箱已经被注册'
       })
@@ -104,6 +105,7 @@ module.exports = {
       const isValidPassword = user.comparePassword(req.body.password)
       if (isValidPassword) {
         res.send({
+          code: 200,
           user: user.toJSON(),
           token: tokenSign(user)
         })

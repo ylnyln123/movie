@@ -6,7 +6,7 @@ module.exports = (app) => {
   app.post('/users/login', UserControllers.login)
   app.post('/users', UserControllers.register)
   app.get('/users/:id',
-    // AuthenticatePolicy.isValidToken,
+    AuthenticatePolicy.isValidToken,
     UserControllers.getUserById
   )
   app.put('/users/:id', UserControllers.update)
