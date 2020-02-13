@@ -18,8 +18,18 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
-  { path: '/users/login', name: 'login', component: () => import('../views/user/login.vue') },
-  { path: '/users/register', name: 'register', component: () => import('../views/user/register.vue') }
+  { path: '/users/login', alias: '/login', name: 'login', component: () => import('../views/user/login.vue') },
+  { path: '/users/register', alias: '/register', name: 'register', component: () => import('../views/user/register.vue') },
+  {
+    path: '/movies',
+    component: () => import('../views/layout/movie'),
+    children: [
+      { path: 'create', name: 'movie-create', component: () => import('../views/movie/create') },
+      { path: 'detail/:id', name: 'movie-detail', component: () => import('../views/movie/detail') },
+      { path: 'list', name: 'movie-list', component: () => import('../views/movie/list') }
+    ]
+  },
+  { path: '*', redirect: { name: 'movie-list' } }
 ]
 
 const router = new VueRouter({

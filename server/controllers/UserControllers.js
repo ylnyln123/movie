@@ -13,20 +13,31 @@ function tokenSign ({ id, email }) {
 }
 
 module.exports = {
-
   // 新增用户（注册）
   async register (req, res) {
     try {
       const user = await User.create(req.body)
       res.status(201).send({
         code: 200,
-        user,
+        user: {
+          email: user.email,
+          id: user.id
+          // vip: user.vip
+        },
         token: tokenSign(user)
       })
     } catch (error) {
-      res.send({
+      console.log(error)
+      // eslint-disable-next-line prefer-const
+      let err = []
+      if (error.errors) {
+        error.errors.forEach(validateError => {
+          err.push(validateError.message)
+        })
+      }
+      res.status(400).send({
         code: 400,
-        error: '该邮箱已经被注册'
+        error: err.join('<br/>')
       })
     }
   },
@@ -106,7 +117,11 @@ module.exports = {
       if (isValidPassword) {
         res.send({
           code: 200,
-          user: user.toJSON(),
+          user: {
+            email: user.email,
+            id: user.id
+            // vip: user.vip
+          },
           token: tokenSign(user)
         })
       } else {

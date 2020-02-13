@@ -23,7 +23,7 @@
         <el-form-item prop="comparePassword" label="确认密码">
           <el-input v-model="registerForm.comparePassword" placeholder="请再次输入密码" type="password"></el-input>
         </el-form-item>
-        <el-button type="primary" plain native-type="submit" :loading="loading" @click="register">开始我的SuperMovie之旅</el-button>
+        <el-button class="registerbutton" type="primary" plain native-type="submit" :loading="loading" @click.prevent="register">开始我的SuperMovie之旅</el-button>
         <div class="register-info">如果您已有账号，请<router-link :to="{name:'login'}">点此登陆</router-link></div>
         </el-form>
         <div class="logo">
@@ -84,11 +84,19 @@ export default {
               this.error = response.data.error
             } else {
               // 将用户信息和token保存到vuex
+              this.$store.dispatch('setToken', response.data.token)
+              this.$store.dispatch('setUser', response.data.user)
+              // this.$store.dispatch('setvip', response.data.vip)
               this.$router.push('/')
             }
             this.loading = false
           } catch (error) {
-
+            if (error.response.data.error) {
+              this.error = error.response.data.error
+            } else {
+              this.error = '注册失败，请重试'
+            }
+            this.loading = false
           }
         }
       })
@@ -142,6 +150,10 @@ export default {
     }
     .register-error{
       color: #F56C6C;
+    }
+     .registerbutton{
+       position: relative;
+       margin-left: 110px;
     }
     }
   }

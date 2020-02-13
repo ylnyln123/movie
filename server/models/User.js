@@ -18,15 +18,23 @@ module.exports = (sequelize, DataTypes) => {
   Model.init({
     email: {
       type: DataTypes.STRING,
-      unique: true,
+      unique: {
+        msg: '该邮箱已被注册'
+      },
       validate: {
-        isEmail: true
+        isEmail: {
+          msg: '请输入正确的邮箱地址'
+        }
       }
     },
     password: {
       type: DataTypes.STRING,
       validate: {
-        len: [8, 16]
+        len: {
+          min: 8,
+          max: 16,
+          msg: '密码长度必须在8-16位之间'
+        }
       }
     }
   },

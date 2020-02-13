@@ -19,7 +19,7 @@
         <el-form-item prop="password" label="密码">
           <el-input v-model="loginForm.password" placeholder="请输入密码" type="password"></el-input>
         </el-form-item>
-        <el-button type="primary" plain native-type="submit" :loading="loading" @click="login" style="width: 160px">登录</el-button>
+        <el-button class="loginbutton" type="primary" plain native-type="submit" :loading="loading" @click="login" style="width: 160px">登录</el-button>
         <div class="login-info">如果您没有账号，请<router-link :to="{name:'register'}">点击注册</router-link></div>
         </el-form>
         <div class="logo">
@@ -66,11 +66,17 @@ export default {
               this.error = response.data.error
             } else {
               // 将用户信息和token保存到vuex
+              this.$store.dispatch('setToken', response.data.token)
+              this.$store.dispatch('setUser', response.data.user)
               this.$router.push('/')
             }
             this.loading = false
           } catch (error) {
-            this.error = '登录失败，请重新登录'
+            if (error.response.data.error) {
+              this.error = error.response.data.error
+            } else {
+              this.error = '登陆失败，请重试'
+            }
             this.loading = false
           }
         }
@@ -125,6 +131,10 @@ export default {
     }
     .login-error{
       color: #F56C6C;
+    }
+    .loginbutton{
+       position: relative;
+       margin-left: 130px;
     }
     }
   }
