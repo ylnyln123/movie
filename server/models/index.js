@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 const config = require('../config')
 const Sequelize = require('sequelize')
 const db = {}
@@ -22,5 +23,4 @@ fs.readdirSync(__dirname).filter(file => file !== 'index.js')
 
 db.Sequelize = Sequelize
 db.sequelize = sequelize
-
 module.exports = db

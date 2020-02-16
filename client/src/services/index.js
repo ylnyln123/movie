@@ -1,12 +1,15 @@
 // 所有API接口的请求都放在这里
 import axios from 'axios'
 // import { Loading } from 'element-ui'
-// import store from '../store'
+import store from '../store'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+
 const request = axios.create({
+  baseURL: '/api',
   headers: {
-    showloading: true
+    showloading: true,
+    Authorization: `Bearer ${store.state.token}`
   }
 })
 NProgress.configure({ showSpinner: false })

@@ -29,7 +29,7 @@
 
            <el-col :span="12">
               <el-form-item label="电影年份" prop="year">
-                  <el-input v-model="form.year" placeholder="请输入电影年份/上映时间"></el-input>
+                  <el-input type="number" v-model="form.year" placeholder="请输入电影年份/上映时间"></el-input>
               </el-form-item>
           </el-col>
 
@@ -66,10 +66,12 @@
 </template>
 
 <script>
+import MovieService from '../../services/MovieService'
 export default {
   data () {
     return {
       loading: false,
+      isEdit: false,
       form: {
         name: '',
         genre: '',
@@ -92,21 +94,48 @@ export default {
       }
     }
   },
+  async created () {
+    if (this.$route.query.id) {
+      this.isEdit = true
+      try {
+        const response = await MovieService.getById(this.$route.query.id)
+        this.form = response.data.movie
+      } catch (error) {
+        this.$message.error(`[${error.response.status}],数据查询异常请重试`)
+      }
+    } else {
+      this.isEdit = false
+    }
+  },
   methods: {
     submit (formName) {
-      this.loading = true
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(async (valid) => {
+        this.loading = true
         if (valid) {
-          console.log(this.form)
           // 调用接口服务，将数据发送给后台进行保存
-          this.$message({
-            message: '信息保存成功，页面将在3秒后自动跳转到列表页面',
-            type: 'success',
-            duration: 3000,
-            onClose: () => {
-              this.$router.push('list')
+          try {
+            if (this.isEdit) {
+              await MovieService.update(this.$route.query.id, this.form)
+            } else {
+              await MovieService.create(this.form)
             }
-          })
+            this.$message({
+              message: '信息保存成功，页面将在3秒后自动跳转到列表页面',
+              type: 'success',
+              duration: 3000,
+              onClose: () => {
+                this.$router.push({ name: 'movie-list' })
+              }
+            })
+          } catch (error) {
+            if (typeof error.response.data !== 'undefined' && error.response.data.error) {
+              this.$message.error(error.response.data.error)
+            } else {
+              this.$message.error(`[${error.response.status}],数据处理异常请重试`)
+            }
+          } finally {
+            this.loading = false
+          }
         } else {
           this.loading = false
           return false

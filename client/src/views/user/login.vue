@@ -73,7 +73,6 @@ export default {
             }
             this.loading = false
           } catch (error) {
-            console.log(error)
             if (error.response.data.error) {
               this.error = error.response.data.error
             } else {
