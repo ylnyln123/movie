@@ -107,8 +107,8 @@ export default {
 <style lang="scss" scoped>
   .logo{
     position: absolute;
-    left: -50px;
-    top: -190px;
+    margin-top: -460px;
+    margin-left: 50px;
   }
   .register-container{
     position: absolute;

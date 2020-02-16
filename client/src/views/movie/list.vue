@@ -7,12 +7,20 @@
             <label>动作</label>
             <label>剧情</label>
         </div>
-         <div class="text-success" style="margin-left: auto; cursor: pointer" @click="$router.push({name: 'movie-create'})">
-                <i class="el-icon-plus"></i>
-                新增电影
-            </div>
+         <!-- <div v-if="$store.state.user==null">
+            <el-button type="text" @click="open"></el-button>
+         </div> -->
+
+         <!-- 当用户未登陆时不显示新增电影 -->
+         <div
+         class="text-success"
+         style="margin-left: auto; cursor: pointer"
+         @click="$router.push({name: 'movie-create'})"
+         v-if="($store.state.user!==null)&&($store.state.user.id === 3)">
+            <i class="el-icon-plus">新增电影</i>
+          </div>
     </template>
-        <div class="movie-list">
+        <div class="movie-list" >
             <a
             class="movie-item"
             @click="$router.push({name: 'movie-detail',params: {id: movie.id}})"
@@ -33,19 +41,32 @@ export default {
       movies: []
     }
   },
+  // methods: {
+  //   open () {
+  //     this.$alert('请先登录', {
+  //       confirmButtonText: '确定',
+  //       callback: action => {
+  //         this.$message({
+  //           type: 'info',
+  //           message: `action: ${action}`
+  //         })
+  //       }
+  //     })
+  //   }
+  // },
   created () {
     // TODO：调用接口获取数据列表
     this.movies = [
       {
         id: 1,
         name: '哪吒',
-        poster: 'https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1581581931&di=d5915b1390ac7cd394ba7b67845431e6&src=http://107cine.cdn.cinehello.com/20190903/uploads/weixin/03Sep2019215031540.jpg',
+        poster: 'http://5b0988e595225.cdn.sohucs.com/images/20190724/0b29bd74e7d64122be74982bfffd2c45.jpeg',
         rating: 8.6
       },
       {
         id: 2,
         name: '哪吒',
-        poster: 'https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1581581931&di=d5915b1390ac7cd394ba7b67845431e6&src=http://107cine.cdn.cinehello.com/20190903/uploads/weixin/03Sep2019215031540.jpg',
+        poster: 'http://5b0988e595225.cdn.sohucs.com/images/20190724/0b29bd74e7d64122be74982bfffd2c45.jpeg',
         rating: 8.6
       }
     ]

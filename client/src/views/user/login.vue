@@ -38,6 +38,7 @@ export default {
       error: '',
       loginForm: {
         email: '',
+        id: '',
         password: '',
         comparePassword: ''
       },
@@ -72,6 +73,7 @@ export default {
             }
             this.loading = false
           } catch (error) {
+            console.log(error)
             if (error.response.data.error) {
               this.error = error.response.data.error
             } else {
@@ -88,8 +90,8 @@ export default {
 <style lang="scss" scoped>
   .logo{
     position: absolute;
-    left: -50px;
-    top: -190px;
+    margin-top: -400px;
+    margin-left: 50px;
   }
   .login-container{
     position: absolute;

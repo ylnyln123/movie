@@ -1,6 +1,6 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
-
+import createPersistedState from 'vuex-persistedstate'
 Vue.use(Vuex)
 // vuex是数据仓库，分为以下三个
 const store = new Vuex.Store({
@@ -9,7 +9,6 @@ const store = new Vuex.Store({
     user: null,
     isUserLogin: false,
     loadingInstance: null
-    // vip: false
   },
   mutations: {
     setToken (state, token) {
@@ -17,6 +16,8 @@ const store = new Vuex.Store({
       // 如果有token值，将isUserLogin改为true
       if (token) {
         state.isUserLogin = true
+      } else {
+        state.isUserLogin = false
       }
     },
     setUser (state, user) {
@@ -42,7 +43,12 @@ const store = new Vuex.Store({
     // setVip ({ commit }, vip) {
     //   commit('setvip', vip)
     // }
-  }
+  },
+  plugins: [
+    createPersistedState({
+      storage: window.sessionStorage
+    })
+  ]
 })
 
 export default store
