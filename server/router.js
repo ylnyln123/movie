@@ -21,6 +21,9 @@ module.exports = (app) => {
   app.put('/movies/:id',
     AuthenticatePolicy.isValidToken, MovieControllers.update
   )
+  app.delete('/movies/:id',
+    AuthenticatePolicy.isValidToken, MovieControllers.delete
+  )
   app.get('/movies/:id',
     MovieControllers.getById
   )

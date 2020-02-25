@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- <script src="base64.js"></script> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SuperMovie讨论室</title>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper blue lighten-2">
+            <a href="#" class="brand-logo center">SuperMovie讨论室</a>
+        </div>
+        <br>
+    </nav>
+    <div class="row">
+        <div class="col s4">
+            <h3 class="flow-text center blue-text text-lighten-1">
+                当前聊天室用户
+            </h3>
+            <ul class="collection" id="user-list">
+
+            </ul>
+        </div>
+        <!-- 消息界面 -->
+        <div id="chat-col" class="col s8" style="display: none">
+            <div class="card blue-grey darken-1">
+                <div id="messages" class="card-content white-text" style="background-color: #0097a7;"></div>
+                    <div class="card-action white">
+                        <!-- 登陆昵称框 -->
+                        <form id="message-form">
+                            <div class="input-field">
+                                <textarea id="textarea" type="text" class="materialize-textarea"></textarea>
+                                <label for="textarea" class="active">请在此处输入你要发送的消息</label>
+                            </div>
+                            <div class="right-align">
+                                <button class="btn waves-effect waves-light btn-small" type="submit" name="action">
+                                    发送
+                                    <i class="material-icons right">send</i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+            </div>
+        </div>
+        <!-- 进入后的模块 -->
+        <div id="login-col" class="col s8" style="display: block">
+            <div class="card">
+                <div class="card-content">
+                    <span id="input-name" class="card-title text-lighten-1" style="font-size: 20px; display: inline;"></span>
+                    <span id="no-name" class="grey-text text-lighten-1" style="font-size: 14px; display: inline; text-decoration:underline; cursor: pointer;">不想设置？用户名进入</span>
+                    <!-- 消息表单 -->
+                    <form id="login-form">
+                        <div class="input-field">
+                            <input type="text" id="name">
+                            <label for="name" class="active"></label>
+                        </div>
+                        <div class="right-align">
+                            <button class="btn waves-effect waves-light btn-small"
+                            type="submit" name="action">进入
+                        <i class="material-icons right">chat</i>
+                        </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            const urlname = window.location.search;
+            const loginForm = document.getElementById('login-form');
+            const messageForm = document.getElementById('message-form');
+            const messages = document.getElementById('messages');
+            const userList = document.getElementById('user-list');
+            const loginCol = document.getElementById('login-col');
+            const chatCol = document.getElementById('chat-col');
+            const Noname = document.getElementById('no-name');
+            var socket = io({
+                'timeout': 8081,
+                'connect timeout': 8081
+            });
+            if (socket !== undefined) {
+                console.log('Connected to socket...');
+            }
+            // 
+                try {
+                // 获取url包含的用户名
+                var Base64 = { _keyStr: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', encode: function (e) { var t = ''; var n, r, i, s, o, u, a; var f = 0; e = Base64._utf8_encode(e); while (f < e.length) { n = e.charCodeAt(f++); r = e.charCodeAt(f++); i = e.charCodeAt(f++); s = n >> 2; o = (n & 3) << 4 | r >> 4; u = (r & 15) << 2 | i >> 6; a = i & 63; if (isNaN(r)) { u = a = 64 } else if (isNaN(i)) { a = 64 } t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a) } return t }, decode: function (e) { var t = ''; var n, r, i; var s, o, u, a; var f = 0; e = e.replace(/[^A-Za-z0-9+/=]/g, ''); while (f < e.length) { s = this._keyStr.indexOf(e.charAt(f++)); o = this._keyStr.indexOf(e.charAt(f++)); u = this._keyStr.indexOf(e.charAt(f++)); a = this._keyStr.indexOf(e.charAt(f++)); n = s << 2 | o >> 4; r = (o & 15) << 4 | u >> 2; i = (u & 3) << 6 | a; t = t + String.fromCharCode(n); if (u !== 64) { t = t + String.fromCharCode(r) } if (a !== 64) { t = t + String.fromCharCode(i) } } t = Base64._utf8_decode(t); return t }, _utf8_encode: function (e) { e = e.replace(/rn/g, 'n'); var t = ''; for (var n = 0; n < e.length; n++) { var r = e.charCodeAt(n); if (r < 128) { t += String.fromCharCode(r) } else if (r > 127 && r < 2048) { t += String.fromCharCode(r >> 6 | 192); t += String.fromCharCode(r & 63 | 128) } else { t += String.fromCharCode(r >> 12 | 224); t += String.fromCharCode(r >> 6 & 63 | 128); t += String.fromCharCode(r & 63 | 128) } } return t }, _utf8_decode: function (e) { var t = ''; var n = 0; var r = c1 = c2 = 0; while (n < e.length) { r = e.charCodeAt(n); if (r < 128) { t += String.fromCharCode(r); n++ } else if (r > 191 && r < 224) { c2 = e.charCodeAt(n + 1); t += String.fromCharCode((r & 31) << 6 | c2 & 63); n += 2 } else { c2 = e.charCodeAt(n + 1); c3 = e.charCodeAt(n + 2); t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63); n += 3 } } return t } }
+                let query = window.location.search
+                let vars = query.split('?name=');
+                let userid= Base64.decode(vars[1]).split('?id=');
+                let myname = userid[0];
+                let myid = userid[1]
+                // 判断用户是否已经进入聊天室，避免同一用户多开窗口
+                socket.emit('check_id', myid)
+                socket.on('RepetitionId', repetitionid => {
+                    alert('您已经打开了聊天室啦！快去畅所欲言吧');
+                    window.opener = null;
+                    window.open('', '_self');
+                    window.close();
+                })
+                // 聊天室成员列表
+                socket.on('loadUser', users => {
+                    userList.innerHTML = ``;
+                    users.forEach(user => {
+                        var userLi = document.createElement('li');
+                        userLi.setAttribute('class', "collection-item");
+                        userLi.innerHTML = `<blockquote class="center">${user}</blockquote>`;
+                        userList.insertBefore(userLi, userList.lastChild);
+                    });
+                });
+
+
+                document.getElementById('input-name').innerText = "尊敬的" + myname + ",请在下方设置你的昵称";
+                Noname.onclick = function () {
+                    document.getElementById('name').value = myname;
+                }
+                //登陆按钮事件
+                loginForm.addEventListener('submit', e => {
+                    e.preventDefault();
+                    Username = document.getElementById('name').value;
+                    if (Username === '') {
+                        M.toast({ html: '昵称不能为空'})
+                    } else {
+                        //登陆后的操作
+                        socket.emit('login', Username, () => {
+                            loginCol.style = "display: none";
+                            chatCol.style = "display: block";
+                            //登陆后的欢迎消息
+                            var message = document.createElement('p');
+                            message.setAttribute('class', 'center blue-grey-text text-lighten-2');
+                            message.textContent = `Welcome to SuperMovie Chatroom`;
+                            messages.appendChild(message);
+                            messages.insertBefore(message, messages.lastElementChild);
+                        })
+                    }
+                });
+                socket.on('repetition', exits => {
+                    if (exits) {
+                        M.toast({ html: '昵称重复,请更换' })
+                    }
+                })
+                // 消息列表(发送消息给服务器)
+                messageForm.addEventListener('submit', e => {
+                    e.preventDefault();
+                    const msg = document.getElementById('textarea').value;
+                    if (msg === '') {
+                        M.toast({ html: '不能发送空白消息' })
+                    } else {
+                        document.getElementById('textarea').value = '';
+                        socket.emit('chat message', msg);//传入一个事件和消息值，后台socket.on监听这个事件
+                    }
+                });
+                // 消息列表(服务器将用户名和消息值发送给客户端)
+                socket.on('output', data => {
+                    var message = document.createElement('blockquote');
+                    message.textContent = data.name + "：" + data.msg;
+                    messages.appendChild(message);
+                    messages.insertBefore(message, messages.lastChild);
+                });
+            } catch (error) {
+                alert('您还未登陆或者注册，请先登陆或注册')
+                 window.location.href = "http://localhost:8080/";
+            }
+
+        })();
+    </script>
+</body>
+
+</html>

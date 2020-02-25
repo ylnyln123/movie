@@ -2,7 +2,7 @@
   <el-container>
     <el-header height="50px" class="bg-primary">
       <div class="header">
-        <h1 style="font-style: italic" @click="$router.push('/')">SuperMovie</h1>
+        <h1 style="font-style: italic;cursor: pointer;" @click="$router.push('/')">SuperMovie</h1>
         <span class="titleAD">你的专属电影</span>
         <div>
           <template v-if="!$store.state.isUserLogin">

@@ -8,31 +8,25 @@ import 'nprogress/nprogress.css'
 const request = axios.create({
   baseURL: '/api',
   headers: {
-    showloading: true,
-    Authorization: `Bearer ${store.state.token}`
+    showloading: true
+    // Authorization: `Bearer ${store.state.token}`
   }
 })
 NProgress.configure({ showSpinner: false })
 
-// 使用elementUI的加载组件以及nprogress的加载进度条组件
 request.interceptors.request.use(config => {
-  // let loadingInstance = Loading.service()
-  // store.dispatch('setLoadingInstance', loadingInstance)
   if (config.headers.showloading) {
     NProgress.start()
     delete config.headers.showloading
   }
+  config.headers.Authorization = `Bearer ${store.state.token}`
   return config
 })
 request.interceptors.response.use(response => {
-  // let loadingInstance = store.state.loadingInstance
-  // loadingInstance.close()
   NProgress.done()
   return response
 },
 function (error) {
-  // let loadingInstance = store.state.loadingInstance
-  // loadingInstance.close()
   NProgress.done()
   return Promise.reject(error)
 })

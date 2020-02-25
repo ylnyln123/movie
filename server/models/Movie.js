@@ -13,6 +13,12 @@ module.exports = (sequelize, DataTypes) => {
     director: {
       type: DataTypes.STRING
     },
+    actor: {
+      type: DataTypes.STRING
+    },
+    video_url: {
+      type: DataTypes.TEXT
+    },
     genre: {
       type: DataTypes.STRING
     },

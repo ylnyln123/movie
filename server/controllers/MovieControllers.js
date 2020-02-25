@@ -1,4 +1,4 @@
-const { Movie } = require('../models')
+const { Movie, Sequelize } = require('../models')
 
 module.exports = {
   async create (req, res) {
@@ -8,6 +8,7 @@ module.exports = {
         code: 200,
         user: movie.toJSON()
       })
+      // console.log(req.body)
     } catch (error) {
       // eslint-disable-next-line prefer-const
       let err = []
@@ -23,9 +24,9 @@ module.exports = {
         error: err.join('<br/>')
       })
     }
+    // console.log(req.body)
   },
 
-  // 查询用户
   async getById (req, res) {
     try {
       const movie = await Movie.findByPk(req.params.id)
@@ -36,7 +37,7 @@ module.exports = {
       } else {
         res.status(400).send({
           code: 400,
-          error: '没有找到对应用户，或许是没有该用户'
+          error: '查询数据失败'
         })
       }
     } catch (error) {
@@ -69,8 +70,23 @@ module.exports = {
     }
   },
   async getAll (req, res) {
+    const Op = Sequelize.Op
+    const operators = {}
+    let orderBy = 'updatedAt'
+    if (req.query.genre) {
+      const filter = {
+        where: {
+          genre: { [Op.like]: `%${req.query.genre}%` }
+        }
+      }
+      Object.assign(operators, filter)
+    }
+    if (req.query.orderby === 'rating') {
+      orderBy = 'rating'
+    }
+    Object.assign(operators, { order: [[orderBy, 'DESC']] })
     try {
-      const movies = await Movie.findAll()
+      const movies = await Movie.findAll(operators)
       res.send({
         code: 200,
         movies: movies
@@ -82,7 +98,7 @@ module.exports = {
       })
     }
   },
-  // 删除用户
+  // 删除数据
   async delete (req, res) {
     try {
       await Movie.destroy(

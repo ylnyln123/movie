@@ -3,36 +3,39 @@
         <template v-slot:title-addon>
 
           <!-- 当用户未登陆时不显示编辑电影 -->
+          <div class="text-danger"
+          @click.prevent="cancel()"
+          v-if="($store.state.user!==null)&&($store.state.user.id === 3)">
+             <i class="el-icon-delete">删除</i>
+          </div>
+
             <div class="text-primary"
             style="margin-left: auto; cursor: pointer"
-            @click="$router.push({name: 'movie-create'})"
+            @click="$router.push({path: '/movies/edit',query: {id: $route.params.id}})"
             v-if="($store.state.user!==null)&&($store.state.user.id === 3)">
-                <i class="el-icon-edit"></i>
-                编辑电影
+              <i class="el-icon-edit">编辑</i>
             </div>
         </template>
-        <div class="movie-item">
+        <div class="movie-item" v-if="movie">
             <h2>{{ movie.name }} <span class="text-info">{{ movie.year}}</span></h2>
             <img :src="movie.poster" :alt="movie.name" class="movie-poster">
             <ul class="movie-meta">
                 <li><label class="text-info">导演：</label>{{movie.director}}</li>
-                <li><label class="text-info">编剧：</label> 饺子 / 易巧 / 魏芸芸</li>
+                <li><label class="text-info">演员：</label> {{movie.actor}}</li>
                 <li><label class="text-info">类型：</label>{{movie.genre}}</li>
                 <li><label class="text-info">评分：</label>
-                  <el-rate
-                  :value="movie.rating/2"
-                  disabled
-                  style="display: inline-block">
-                  </el-rate>
+                  <el-rate :value="movie.rating/2" disabled style="display: inline-block"></el-rate>
                   <span style="color: #ff9900">{{ movie.rating }}</span>
                 </li>
-                <li><label class="text-info">片长：</label>110分钟</li>
                 <li><label class="text-info">IMDB链接：</label>{{movie.imdb_id}}</li>
+                <!-- button播放按钮 -->
+                <li><el-button type="primary"
+                  @click="$router.push({name: 'movie-player'})"
+                ><i class="el-icon-caret-right"></i> 立即播放</el-button></li>
             </ul>
             <div class="movie-description">
               <h3 class="text-success">{{movie.name}}的剧情简介</h3>
             <p class="movie-description">{{ movie.description }}
-                ...<span class="text-success">查看详情</span>
             </p>
             </div>
         </div>
@@ -40,30 +43,74 @@
 </template>
 
 <script>
+import MovieService from '../../services/MovieService'
 export default {
   data () {
     return {
-      movie: null
+      movie: {}
     }
   },
-  created () {
+  async created () {
     // 调用接口服务获取数据信息
-    this.movie = {
-      id: 1,
-      director: '饺子',
-      imdb_id: 'tt10627720',
-      name: '哪吒之魔童降世',
-      year: '2019',
-      genre: '剧情 / 喜剧 / 动画',
-      rating: 8.6,
-      poster: 'http://5b0988e595225.cdn.sohucs.com/images/20190724/0b29bd74e7d64122be74982bfffd2c45.jpeg',
-      description: '　天地灵气孕育出一颗能量巨大的混元珠，元始天尊将混元珠提炼成灵珠和魔丸，灵珠投胎为人，助周伐纣时可堪大用；而魔丸则会诞出魔王，为祸人间。元始天尊启动了天劫咒语，3年后天雷将会降临，摧毁魔丸。太乙受命将灵珠托生于陈塘关李靖家的儿子哪吒身上。然而阴差阳错，灵珠和魔丸竟然被掉包。本应是灵珠英雄的哪吒却成了混世大魔王。调皮捣蛋顽劣不堪的哪吒却徒有一颗做英雄的心。然而面对众人对魔丸的误解和即将来临的天雷的降临，哪吒是否命中注定会立地成魔？他将何去何从？'
+    let id = this.$route.params.id
+    try {
+      const response = await MovieService.getById(id)
+      this.movie = response.data.movie
+    } catch (error) {
+      this.$message.error(`[${error.response.status}],数据查询异常请重试`)
+    }
+  },
+  methods: {
+    async cancel () {
+      try {
+        this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          let id = this.$route.params.id
+          const response = await MovieService.delete(id)
+          this.movie = response.data.movie
+          this.$message({
+            type: 'success',
+            message: '删除成功!页面将在3秒后返回主界面',
+            duration: 3000,
+            onClose: () => {
+              this.$router.push({ name: 'movie-list' })
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+        // let id = this.$route.params.id
+        // const response = await MovieService.delete(id)
+        // this.movie = response.data.movie
+        // this.$message({
+        //   message: '信息删除成功，页面将在3秒后自动跳转到列表页面',
+        //   type: 'success',
+        //   duration: 3000,
+        //   onClose: () => {
+        //     this.$router.push({ name: 'movie-list' })
+        //   }
+        // })
+      } catch (error) {
+        this.$message.error(`[${error.response.status}],删除失败请重试`)
+      }
     }
   }
 }
+
 </script>
 
 <style lang="scss" scoped>
+  .text-danger{
+    position: absolute;
+    margin-left: 830px;
+    cursor: pointer;
+  }
   .movie-item{
       padding: 0 10px;
       .movie-poster {

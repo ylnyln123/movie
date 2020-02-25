@@ -27,8 +27,17 @@ const router = new Router({
       component: () => import('../views/layout/movie'),
       children: [
         { path: 'create', name: 'movie-create', alias: 'edit', component: () => import('../views/movie/create'), meta: { auth: true } },
+        {
+          path: 'delete',
+          name: 'movie-delete',
+          component: () => import('../views/movie/create'),
+          meta: {
+            auth: true
+          }
+        },
         { path: 'detail/:id', name: 'movie-detail', component: () => import('../views/movie/detail') },
-        { path: 'list', name: 'movie-list', component: () => import('../views/movie/list') }
+        { path: 'list', name: 'movie-list', component: () => import('../views/movie/list') },
+        { path: 'player/:id', name: 'movie-player', component: () => import('../views/movie/player') }
       ]
     },
     { path: '*', redirect: { name: 'movie-list' } }

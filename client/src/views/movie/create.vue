@@ -21,6 +21,19 @@
               </el-form-item>
           </el-col>
 
+          <el-col :span="12">
+              <el-form-item label="电影演员" prop="actor">
+                  <el-input v-model="form.actor" placeholder="请输入电影演员"></el-input>
+              </el-form-item>
+          </el-col>
+
+          <el-col :span="12">
+              <el-form-item label="资源地址" prop="video_url">
+                  <el-input v-model="form.video_url" placeholder="http://localhost:3000/static/" type="text">
+                   </el-input>
+              </el-form-item>
+          </el-col>
+
            <el-col :span="12">
               <el-form-item label="电影IMDB" prop="imdb_id">
                   <el-input v-model="form.imdb_id" placeholder="请输入电影IMDB"></el-input>
@@ -76,6 +89,8 @@ export default {
         name: '',
         genre: '',
         director: '',
+        actor: '',
+        video_url: '',
         imdb_id: '',
         year: '',
         poster: '',
@@ -86,6 +101,8 @@ export default {
         name: { required: true, message: '请输入电影名称', trigger: 'blur' },
         genre: { required: true, message: '请输入电影类别', trigger: 'blur' },
         director: { required: true, message: '请输入电影导演', trigger: 'blur' },
+        actor: { required: true, message: '请输入电影演员', trigger: 'blur' },
+        video_url: { required: true, message: '请输入资源地址', trigger: 'blur' },
         imdb_id: { required: true, message: '请输入电影IMDB', trigger: 'blur' },
         year: { required: true, message: '请输入电影年份', trigger: 'blur' },
         poster: { required: true, message: '请输入电影海报地址', trigger: 'blur' },
