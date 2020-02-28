@@ -74,13 +74,25 @@ module.exports = {
     const operators = {}
     let orderBy = 'updatedAt'
     if (req.query.genre) {
-      const filter = {
+      const filters = {
         where: {
           genre: { [Op.like]: `%${req.query.genre}%` }
         }
       }
-      Object.assign(operators, filter)
+      Object.assign(operators, filters)
     }
+    if (req.query.name) {
+      const filter = {
+        where: {
+          name: {
+            [Op.like]: `%${req.query.name}%`
+          }
+        }
+      }
+      Object.assign(operators, filter)
+      console.log(filter)
+    }
+
     if (req.query.orderby === 'rating') {
       orderBy = 'rating'
     }

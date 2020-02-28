@@ -32,11 +32,13 @@ let connectedId = []
 io.on('connection', socket => {
   console.log('a user connected')
   updateUserName()
-  let userName = ''
+  let UserName = ''
   let Userid = ''
-  socket.on('check_id', id => {
+  socket.on('check_id', (id, name) => {
     if (connectedId.indexOf(id) >= 0) {
       let repetitionid = true
+      connectedId.push(id)
+      connectedUser.push(name)
       socket.emit('RepetitionId', repetitionid)
     } else {
       Userid = id
@@ -49,9 +51,9 @@ io.on('connection', socket => {
       socket.emit('repetition', exits)
       return false
     } else {
+      UserName = name
+      connectedUser.push(UserName)
       callback(true)
-      userName = name
-      connectedUser.push(userName)
       updateUserName()
     }
     // console.log(connectedUser)
@@ -60,7 +62,7 @@ io.on('connection', socket => {
   socket.on('chat message', msg => {
     // console.log(msg)
     io.emit('output', {
-      name: userName,
+      name: UserName,
       msg: msg
     })
   })
@@ -68,8 +70,8 @@ io.on('connection', socket => {
   // 用户退出聊天室之后的操作
   socket.on('disconnect', () => {
     console.log('user disconnected')
-    connectedUser.splice(connectedUser.indexOf(userName), 1)
-    connectedId.splice(connectedId.indexOf(Userid), 1)
+    connectedUser.splice(connectedUser.lastIndexOf(UserName), 1)
+    connectedId.splice(connectedId.lastIndexOf(Userid), 1)
     updateUserName()
   })
   // 用户列表
